@@ -33,34 +33,6 @@ cd ..
 python app.py
 ```
 
-Windows
-
-```
-git clone https://github.com/m-a-rahul/cyber-health-report.git
-
-cd cyber-health-report/src
-
-wget https://flipkart-grid.s3.ap-south-1.amazonaws.com/.env
-
-py -m venv env
-
-.\env\Scripts\activate
-
-pip install -r requirements.txt
-
-mkdir ml_models
-
-cd ml_models
-
-wget https://flipkart-grid.s3.ap-south-1.amazonaws.com/git_repo.sav
-
-wget https://flipkart-grid.s3.ap-south-1.amazonaws.com/twitter_user_confidence_score.sav
-
-cd ..
-
-python app.py
-```
-
 Now locate the index.html file which will be
 
 ```
