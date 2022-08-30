@@ -13,7 +13,7 @@
     <div class="container">
         <form id="package-details" class="row mt-5">
             <div class="col-3">
-                <select id="platform" class="form-select" aria-label="Registry/Repository">
+                <select id="platform" class="form-select" aria-label="Registry/Repository" disabled>
                     <option selected value="npm">NPM</option>
                     <option value="pypi">PyPi</option>
                     <option value="github">GitHub</option>
@@ -53,7 +53,7 @@
 
                         </ul>
                     </div>
-                    <div class="author-card-individual-components border-top">
+                    <div class="author-card-individual-components border-top" id="author-mail-validation">
                         <div class="d-flex justify-content-between p-3">
                             <div>
                                 <img src="images/mail_logo.svg" width="30" height="30">

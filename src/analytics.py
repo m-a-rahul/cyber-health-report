@@ -7,8 +7,9 @@ from datetime import datetime
 
 import numpy as np
 import requests
+from sklearn.preprocessing import MinMaxScaler
 
-from components import github_api_call
+from components import github_api_call, NormalizeData
 
 
 def repository_data_collection(owner_details: dict, repository_details: dict) -> list:
@@ -92,10 +93,17 @@ def repository_scorer(repository_parameters):
 
     loaded_model = pickle.load(open(filename, 'rb'))
     result = loaded_model.predict([repository_parameters])
-    result = round(max(result) / 1000)
-    result = 100 if result > 100 else result
+    result = round(max(result))
+    if result > (12.5 * 10**5):
+        result = 100
+    elif result > 10**5:
+        result = NormalizeData(result, 10**5, 12.5 * 10**5, 75, 99)
+    elif result > (5 * 10**4):
+        result = NormalizeData(result, 5 * 10**4, 10**5, 35, 75)
+    else:
+        result = NormalizeData(result, 0, 5 * 10 ** 4, 1, 35)
     return {
-        "popularity_score": result,
+        "popularity_score": round(result),
     }
 
 

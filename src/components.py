@@ -58,3 +58,15 @@ def calculate_severity(confidence: str, severity: str) -> int:
         "UNDEFINED": 2.5,
     }
     return score_allocation[confidence] * score_allocation[severity]
+
+
+def NormalizeData(value, old_minimum, old_maximum, new_minimum, new_maximum):
+    """
+    :param value: Value to be brought in the new range
+    :param old_minimum: Minimum of the old range
+    :param old_maximum: Maximum of the old range
+    :param new_minimum: Minimum of the new range
+    :param new_maximum: Maximum of the new range
+    :return: Value corresponding to the new range
+    """
+    return ((value - old_minimum) / (old_maximum - old_minimum)) * (new_maximum - new_minimum) + new_minimum

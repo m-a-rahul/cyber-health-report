@@ -79,6 +79,7 @@ const npmAuthorScoresRenderer = (author_info) => {
         $('#npm-author-scores').append(renderContent);
     } else {
         $('#npm-author-div').addClass('blur-div');
+        $('#npm-author-div').attr('title', 'NPM author info not found');
     }
 }
 
@@ -208,6 +209,7 @@ const twitterScoreRenderer = (twitter_info) => {
         $('#twitter-author-score').append(renderContent);
     } else {
         $('#twitter-div').addClass('blur-div');
+        $('#twitter-div').attr('title','The github username does not contain a twitter account associated to him');
     }
 }
 
@@ -258,25 +260,27 @@ const githubCollaborationsResults = (file_vulnerabilities) => {
             }
         });
 
-        if (serialNo == 1) {
-            $('#file-vulnerabilities-table').empty();
-            $('#file-vulnerabilities-table').html(`<div class="alert alert-info" role="alert">
-            ${fileCount} files analyzed 0 vulnerabilities found
-          </div>`);
-        } else {
-            $('#file-vulnerabilities-results').empty();
-            $('#file-vulnerabilities-results').html(renderContent);
-        }
         if (fileCount != 0) {
             results.contributors_mail_score = Math.round(safetyScore / fileCount);
+            $('#final-github-contributors-score').empty()
+            $('#final-github-contributors-score').html(`${results.contributors_mail_score}%`);
+            $('#file-vulnerabilities-results').empty();
+            $('#file-vulnerabilities-results').html(renderContent);
+            $('#contributors-score-div').attr('title', `${fileCount} files were analyzed`);
         } else {
-            results.contributors_mail_score = 100;
+            $('#file-vulnerabilities-table').empty();
+            $('#contributors-score-div').addClass('blur-div');
+            $('#contributors-score-div').attr('title', 'We currently support only python and javascript files and none found');
         }
 
-        $('#final-github-contributors-score').empty()
-        $('#final-github-contributors-score').html(`${results.contributors_mail_score}%`);
+        if(serialNo==1) {
+            $('#file-vulnerabilities-table').empty();
+        }
+
+
     } else {
         $('#contributors-score-div').addClass('blur-div');
+        $('#contributors-score-div').attr('title', 'We currently support only python and javascript files and none found');
     }
 }
 
@@ -309,7 +313,12 @@ const renderFinalScores = () => {
         author_score += results.npm_author_score;
         author_metrics += 1;
     }
-    author_score = Math.round(author_score / author_metrics);
+    if(author_metrics==0) {
+        author_score = 0;
+        $('#author-mail-validation').addClass('blur-div');
+        $('#author-mail-validation').attr('title', 'No author email ids identified for the particular project');
+    } else
+        author_score = Math.round(author_score / author_metrics);
     project_score = Math.round(project_score / project_metrics);
 
     authorRenderContent = `<div class="d-flex justify-content-center">
@@ -359,7 +368,7 @@ $("#package-details").on('submit', function (e) {
         platform: $('#platform').val(),
     }
     if (data.platform == 'github') {
-        data.username = getValidatedInput('#username', '^[a-z][a-z-_.]*$');
+        data.username = getValidatedInput('#username', '^[a-zA-Z0-9-_.]*$');
         data.repository = getValidatedInput('#repository', '^[a-zA-Z0-9._-]+$');
     } else {
         data.package = getValidatedInput('#package', "^[a-z][a-z-_.0-9]*$");
@@ -373,7 +382,7 @@ $("#package-details").on('submit', function (e) {
         $('#submit-button').prop('disabled', true);
         $.ajax({
             type: 'POST',
-            url: "http://127.0.0.1:5000/",
+            url: "http://127.0.0.1:8000/",
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             success: function (response) {
@@ -388,7 +397,9 @@ $("#package-details").on('submit', function (e) {
                         pypiAuthorMailChecksRenderer(parsedResponse.data.pypi.author);
                     if (!('npm' in parsedResponse.data)) {
                         $('#npm-package-div').addClass('blur-div');
+                        $('#npm-package-div').attr('title', 'The package is not from the npm repository');
                         $('#npm-author-div').addClass('blur-div');
+                        $('#npm-author-div').attr('title', 'The package is not from the npm repository');
                     }
                     if ('github' in parsedResponse.data) {
                         githubCollaborationsResults(parsedResponse.data.github.files_vulnerabilities);
@@ -401,6 +412,9 @@ $("#package-details").on('submit', function (e) {
                         $('#repository-score-div').addClass('blur-div');
                         $('#twitter-div').addClass('blur-div');
                         $('#contributors-score-div').addClass('blur-div');
+                        $('#repository-score-div').attr('title', 'The package does not contain any GitHub details');
+                        $('#twitter-div').attr('title', 'The package does not contain any GitHub details');
+                        $('#contributors-score-div').attr('title', 'The package does not contain any GitHub details');
                     }
                     renderFinalScores();
                 }
@@ -424,5 +438,6 @@ $(function () {
         window.location.reload();
     } else {
         $('#submit-button').prop('disabled', false);
+        $('#platform').prop('disabled', false);
     }
 });
