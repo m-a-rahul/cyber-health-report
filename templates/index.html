@@ -20,10 +20,13 @@
                 </select>
             </div>
             <div class="col-9" id="package-input-data">
-                <div class="input-group mb-3  has-validation">
-                    <input type="text" class="form-control" id="package" type="text" class="form-control"
-                        placeholder="Package name" aria-label="Package name" aria-describedby="submit-button">
-                    <button class="btn btn-primary" type="submit" id="submit-button" disabled>Inspect</button>
+                <div class="d-flex mb-3">
+                    <div class="input-group has-validation w-75">
+                        <input type="text" class="form-control" id="package" type="text" class="form-control"
+                            placeholder="Package name" aria-label="Package name" aria-describedby="submit-button">
+                    </div>
+                    <button class="btn btn-primary mx-2" id="quick-scan" disabled>Quick Scan</button>
+                    <button class="btn btn-primary" id="full-scan" disabled>Full Scan</button>
                 </div>
             </div>
         </form>
@@ -45,7 +48,7 @@
                                 <img src="images/npm_logo.svg" width="30" height="30">
                                 NPM Author Details
                             </div>
-                            <div class="fw-bold text-success">
+                            <div class="fw-bold text-body">
                                 <span id="final-author-npm-score"></span>
                             </div>
                         </div>
@@ -59,7 +62,7 @@
                                 <img src="images/mail_logo.svg" width="30" height="30">
                                 Authors’ Mail Validation
                             </div>
-                            <div class="fw-bold text-success">
+                            <div class="fw-bold text-body">
                                 <span id="final-author-mail-score"></span>
                             </div>
                         </div>
@@ -73,7 +76,7 @@
                                 <img src="images/twitter_logo.svg" width="30" height="30">
                                 Twitter Account Analysis
                             </div>
-                            <div class="fw-bold text-success" id="final-twitter-score">
+                            <div class="fw-bold text-body" id="final-twitter-score">
                                 <span id="final-twitter-score"></span>
                             </div>
                         </div>
@@ -93,7 +96,7 @@
                                 <img src="images/npm_logo.svg" width="30" height="30">
                                 NPM Package Score
                             </div>
-                            <div class="fw-bold text-success">
+                            <div class="fw-bold text-body">
                                 <span id="final-package-npm-score"></span>
                             </div>
                         </div>
@@ -104,7 +107,7 @@
                                 <img src="images/github_logo.svg" width="30" height="30">
                                 GitHub Repository Score
                             </div>
-                            <div class="fw-bold text-success">
+                            <div class="fw-bold text-body">
                                 <span id="final-github-repository-score"></span>
                             </div>
                         </div>
@@ -115,7 +118,7 @@
                                 <img src="images/collaborators.svg" width="30" height="30">
                                 Analysing contributions of collaborators
                             </div>
-                            <div class="fw-bold text-success">
+                            <div class="fw-bold text-body">
                                 <span id="final-github-contributors-score"></span>
                             </div>
                         </div>
@@ -142,6 +145,8 @@
                 </div>
             </div>
         </div>
+        <ul class="list-group d-none mb-3" id="result-logs">
+        </ul>
     </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

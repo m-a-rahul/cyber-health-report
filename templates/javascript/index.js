@@ -3,21 +3,26 @@ let results = {};
 $('#platform').on('change', function () {
     if ($('#platform').val() == 'github') {
         $('#package-input-data').empty();
-        $('#package-input-data').append(`<div class="input-group has-validation mb-3">
-            <input id="username" type="text" class="form-control" placeholder="GitHub username" aria-label="GitHub username">
-            <span class="input-group-text">/</span>
-            <input id="repository" type="text" class="form-control" placeholder="GitHub repository"
-                aria-label="GitHub repository">
-            <button class="btn btn-primary" type="submit" id="submit-button">Inspect</button>
+        $('#package-input-data').append(`<div class="d-flex mb-3">
+            <div class="input-group has-validation w-75">
+                <input id="username" type="text" class="form-control" placeholder="GitHub username" aria-label="GitHub username">
+                <span class="input-group-text">/</span>
+                <input id="repository" type="text" class="form-control" placeholder="GitHub repository"
+                    aria-label="GitHub repository">
+            </div>
+            
+            <button class="btn btn-primary mx-2" id="quick-scan">Quick Scan</button>
+            <button class="btn btn-primary" id="full-scan">Full Scan</button>
         </div>`);
     } else {
         $('#package-input-data').empty();
-        $('#package-input-data').append(`<div class="input-group has-validation mb-3">
-            <div class="input-group  has-validation mb-3">
-                <input type="text" class="form-control" id="package" type="text" class="form-control" placeholder="Package name"
-                aria-label="Package name" aria-describedby="submit-button">
-                <button class="btn btn-primary" type="submit" id="submit-button">Inspect</button>
+        $('#package-input-data').append(`<div class="d-flex mb-3">
+            <div class="input-group has-validation w-75">
+                <input type="text" class="form-control" id="package" type="text" class="form-control"
+                    placeholder="Package name" aria-label="Package name" aria-describedby="submit-button">
             </div>
+            <button class="btn btn-primary mx-2" id="quick-scan">Quick Scan</button>
+            <button class="btn btn-primary" id="full-scan">Full Scan</button>
         </div>`);
     }
 });
@@ -201,15 +206,17 @@ const twitterScoreRenderer = (twitter_info) => {
         if (twitter_info.user_status == 'verified') {
             $('#final-twitter-score').html('100%');
             results.twitter = 100;
+            $('#result-logs').append('<li class="list-group-item list-group-item-success">The twitter account of the github user is a verified twitter account</li>');
         } else {
-            $('#final-twitter-score').html(`${twitter_info.genuineness_score}%`)
-            results.twitter = twitter_info.genuineness_score
+            $('#final-twitter-score').html(`${twitter_info.genuineness_score}%`);
+            results.twitter = twitter_info.genuineness_score;
         }
         $('#twitter-author-score').empty();
         $('#twitter-author-score').append(renderContent);
     } else {
         $('#twitter-div').addClass('blur-div');
-        $('#twitter-div').attr('title','The github username does not contain a twitter account associated to him');
+        $('#twitter-div').attr('title', 'The github username does not contain a twitter account associated to him');
+        $('#result-logs').append('<li class="list-group-item list-group-item-info">The github username does not contain a twitter account associated to him</li>');
     }
 }
 
@@ -267,13 +274,15 @@ const githubCollaborationsResults = (file_vulnerabilities) => {
             $('#file-vulnerabilities-results').empty();
             $('#file-vulnerabilities-results').html(renderContent);
             $('#contributors-score-div').attr('title', `${fileCount} files were analyzed`);
+            $('#result-logs').append(`<li class="list-group-item list-group-item-info">${fileCount} files were analyzed</li>`);
         } else {
             $('#file-vulnerabilities-table').empty();
             $('#contributors-score-div').addClass('blur-div');
             $('#contributors-score-div').attr('title', 'We currently support only python and javascript files and none found');
+            $('#result-logs').append('<li class="list-group-item list-group-item-info">We currently support only python and javascript files and none found</li>');
         }
 
-        if(serialNo==1) {
+        if (serialNo == 1) {
             $('#file-vulnerabilities-table').empty();
         }
 
@@ -281,6 +290,7 @@ const githubCollaborationsResults = (file_vulnerabilities) => {
     } else {
         $('#contributors-score-div').addClass('blur-div');
         $('#contributors-score-div').attr('title', 'We currently support only python and javascript files and none found');
+        $('#result-logs').append('<li class="list-group-item list-group-item-info">We currently support only python and javascript files and none found</li>');
     }
 }
 
@@ -289,12 +299,16 @@ const renderFinalScores = () => {
     let author_metrics = 0;
     let project_score = 0;
     let project_metrics = 0
+    let author_score_fg = '#fc5442';
+    let author_score_bg = '#fc544210';
+    let project_score_fg = '#fc5442';
+    let project_score_bg = '#fc544210';
     if ('contributors_mail_score' in results) {
         project_score += results.contributors_mail_score;
         project_metrics += 1;
     }
-    if ('npm_author_score' in results) {
-        project_score += results.npm_author_score;
+    if ('npm_project_score' in results) {
+        project_score += results.npm_project_score;
         project_metrics += 1;
     }
     if ('repository_popularity_score' in results) {
@@ -313,17 +327,26 @@ const renderFinalScores = () => {
         author_score += results.npm_author_score;
         author_metrics += 1;
     }
-    if(author_metrics==0) {
+    if (author_metrics == 0) {
         author_score = 0;
         $('#author-mail-validation').addClass('blur-div');
         $('#author-mail-validation').attr('title', 'No author email ids identified for the particular project');
+        $('#result-logs').append('<li class="list-group-item list-group-item-warning">No author email ids identified for the particular project</li>');
     } else
         author_score = Math.round(author_score / author_metrics);
+    console.log(project_score, project_metrics);
     project_score = Math.round(project_score / project_metrics);
 
+    if (author_score > 75) {
+        author_score_fg = '#19aa7f';
+        author_score_bg = '#19aa7f10';
+    } else if (author_score > 50) {
+        author_score_fg = '#fbb532';
+        author_score_bg = '#fbb53210';
+    }
     authorRenderContent = `<div class="d-flex justify-content-center">
         <div class="author_score" role="progressbar" aria-valuenow="${author_score}" aria-valuemin="0"
-            aria-valuemax="100" style="--value:${author_score};--fg:#f06292;--bg:#f0629210">
+            aria-valuemax="100" style="--value:${author_score};--fg:${author_score_fg};--bg:${author_score_bg}">
         </div>
     </div>
     <h4 class="fw-bold mt-4 mb-2">${author_score}%</h4>
@@ -333,9 +356,17 @@ const renderFinalScores = () => {
     $('#author-final-score').empty();
     $('#author-final-score').append(authorRenderContent);
 
+    if (project_score > 75) {
+        project_score_fg = '#19aa7f';
+        project_score_bg = '#19aa7f10';
+    } else if (project_score > 50) {
+        project_score_fg = '#fbb532';
+        project_score_bg = '#fbb53210';
+    }
+
     projectRenderContent = `<div class="d-flex justify-content-center">
         <div class="repository_score" role="progressbar" aria-valuenow="${project_score}" aria-valuemin="0"
-            aria-valuemax="100" style="--value:${project_score};--fg:#5A6BC0;--bg:#5A6BC010">
+            aria-valuemax="100" style="--value:${project_score};--fg:${project_score_fg};--bg:${project_score_bg}">
         </div>
     </div>
     <h4 class="fw-bold mt-4 mb-2">${project_score}%</h4>
@@ -347,6 +378,7 @@ const renderFinalScores = () => {
 
     $('#author-div').removeClass('d-none');
     $('#project-div').removeClass('d-none');
+    $('#result-logs').removeClass('d-none');
     $('#loading').addClass('d-none');
 }
 
@@ -362,10 +394,10 @@ const getValidatedInput = (id, regex) => {
     }
 }
 
-$("#package-details").on('submit', function (e) {
-    e.preventDefault();
+const submitPackage = (flag) => {
     let data = {
         platform: $('#platform').val(),
+        flag,
     }
     if (data.platform == 'github') {
         data.username = getValidatedInput('#username', '^[a-zA-Z0-9-_.]*$');
@@ -379,10 +411,11 @@ $("#package-details").on('submit', function (e) {
         $('#username').prop('disabled', true);
         $('#repository').prop('disabled', true);
         $('#package').prop('disabled', true);
-        $('#submit-button').prop('disabled', true);
+        $('#quick-scan').prop('disabled', true);
+        $('#full-scan').prop('disabled', true);
         $.ajax({
             type: 'POST',
-            url: "http://127.0.0.1:8000/",
+            url: "http://127.0.0.1:5000/",
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             success: function (response) {
@@ -391,6 +424,7 @@ $("#package-details").on('submit', function (e) {
                     if (data.platform == 'npm') {
                         npmAuthorMailChecksRenderer(parsedResponse.data.npm.author);
                         npmAuthorScoresRenderer(parsedResponse.data.npm.author);
+                        results.npm_project_score = parsedResponse.data.npm.package;
                         $('#final-package-npm-score').empty();
                         $('#final-package-npm-score').html(`${parsedResponse.data.npm.package}%`);
                     } else if (data.platform == 'pypi')
@@ -406,6 +440,9 @@ $("#package-details").on('submit', function (e) {
                         githubRepositoryOwnerMailChecks(parsedResponse.data.github.github_owner);
                         twitterScoreRenderer(parsedResponse.data.github.twitter);
                         results.repository_popularity_score = parsedResponse.data.github.repository.popularity_score;
+                        if (parsedResponse.data.github.forked) {
+                            $('#result-logs').append('<li class="list-group-item list-group-item-warning">The repository is forked kindly make sure you are examining the right package</li>');
+                        }
                         $('#final-github-repository-score').empty();
                         $('#final-github-repository-score').html(`${parsedResponse.data.github.repository.popularity_score}%`);
                     } else {
@@ -415,6 +452,7 @@ $("#package-details").on('submit', function (e) {
                         $('#repository-score-div').attr('title', 'The package does not contain any GitHub details');
                         $('#twitter-div').attr('title', 'The package does not contain any GitHub details');
                         $('#contributors-score-div').attr('title', 'The package does not contain any GitHub details');
+                        $('#result-logs').append('<li class="list-group-item list-group-item-info">The package does not contain any GitHub details</li>');
                     }
                     renderFinalScores();
                 }
@@ -429,15 +467,25 @@ $("#package-details").on('submit', function (e) {
             }
         });
     }
+}
+
+$(document).on('click', '#quick-scan', function (e) {
+    e.preventDefault();
+    submitPackage("quick-scan");
 });
 
+$(document).on('click', '#full-scan', function (e) {
+    e.preventDefault();
+    submitPackage("full-scan");
+});
 
 $(function () {
     if (window.innerWidth < 992) {
         alert("Sorry, our interface currently doesn't support the screen device try using a laptop/desktop");
         window.location.reload();
     } else {
-        $('#submit-button').prop('disabled', false);
+        $('#quick-scan').prop('disabled', false);
+        $('#full-scan').prop('disabled', false);
         $('#platform').prop('disabled', false);
     }
 });

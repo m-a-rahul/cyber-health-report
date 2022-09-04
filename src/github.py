@@ -6,7 +6,7 @@ from sast import bandit_analysis, js_file_analyser
 db = MongoAPI(client_db="bvlisomentj7mwo", client_cl="analysed_github_repositories")
 
 
-def github_details(gh_username: str, gh_repository_name: str) -> dict:
+def github_quick_scan(gh_username: str, gh_repository_name: str) -> dict:
     """
     :param gh_username: GitHub username of the repository's owner
     :param gh_repository_name: GitHub repository to be evaluated
@@ -57,7 +57,7 @@ def github_details(gh_username: str, gh_repository_name: str) -> dict:
         if file_changed.split('.')[-1] == 'py':
             file_report = bandit_analysis(gh_username, gh_repository_name, file_changed)
         elif file_changed.split('.')[-1] == 'js':
-            file_report = files_content.append(js_file_analyser(gh_username, gh_repository_name, file_changed))
+            file_report = js_file_analyser(gh_username, gh_repository_name, file_changed)
         if file_report:
             files_content.append(file_report)
 
@@ -83,8 +83,57 @@ def github_details(gh_username: str, gh_repository_name: str) -> dict:
         "github": {
             "github_owner": {
                 "email": owner_details['email'],
-                "email_verified": email_validator(owner_details['email']) if 'email' in owner_details and owner_details['email'] else None,
+                "email_verified": email_validator(owner_details['email']) if 'email' in owner_details and owner_details[
+                    'email'] else None,
             },
+            "forked": repository_details['fork'],
+            "files_vulnerabilities": files_content,
+            "repository": repository_score,
+            "twitter": twitter_user_details
+        }
+    }
+
+
+def github_full_scan(gh_username: str, gh_repository_name: str) -> dict:
+    """
+    :param gh_username: GitHub username of the repository's owner
+    :param gh_repository_name: GitHub repository to be evaluated
+    :return: Comprehensive analytics report (SAST + Twitter user analytics)
+    """
+    # Gather repository and its owner's information via the GitHub API
+    owner_details = github_api_call(f"https://api.github.com/users/{gh_username}")
+    repository_details = github_api_call(f"https://api.github.com/repos/{gh_username}/{gh_repository_name}")
+    if not owner_details or not repository_details:
+        return {}
+    repository_parameters = repository_data_collection(owner_details, repository_details)
+    repository_score = repository_scorer(repository_parameters)
+    files_content = []
+
+    # Collect the pull request of the particular repository
+    files = github_api_call(
+        f"https://api.github.com/repos/{gh_username}/{gh_repository_name}/git/trees/{repository_details['default_branch']}?recursive=1")['tree']
+
+    # Perform SAST on the identified files
+    for file in files:
+        file_report = None
+        if file['path'].endswith('.py'):
+            file_report = bandit_analysis(gh_username, gh_repository_name, file['path'])
+        elif file['path'].endswith('.js'):
+            file_report = js_file_analyser(gh_username, gh_repository_name, file['path'])
+        if file_report:
+            files_content.append(file_report)
+
+    twitter_user_details = twt_user_analysis(owner_details['twitter_username']) if owner_details[
+        'twitter_username'] else None
+
+    return {
+        "github": {
+            "github_owner": {
+                "email": owner_details['email'],
+                "email_verified": email_validator(owner_details['email']) if 'email' in owner_details and owner_details[
+                    'email'] else None,
+            },
+            "forked": repository_details['fork'],
             "files_vulnerabilities": files_content,
             "repository": repository_score,
             "twitter": twitter_user_details

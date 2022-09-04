@@ -2,14 +2,15 @@ from urllib.parse import urlparse
 
 import requests
 
-from github import github_details
+from github import github_quick_scan, github_full_scan
 from components import email_validator
 from utils import lcs_of_array, calculate_average
 
 
-def pypi_details(package_name: str) -> dict:
+def pypi_details(package_name: str, scan_type: str) -> dict:
     """
     :param package_name: The name of the PyPi package that should be inspected
+    :param scan_type: Whether it should be a quick scan or full scan
     :return: The json report containing author and GitHub repository analytics
     """
 
@@ -40,7 +41,10 @@ def pypi_details(package_name: str) -> dict:
         [urlparse(url).path for url in package_details["info"]["project_urls"].values() if
          urlparse(url).netloc.lstrip('www.') == 'github.com']).lstrip('/').rstrip('/').split('/')
 
-    github_info = github_details(gh_username_repository[0], gh_username_repository[1])
+    if scan_type == 'full-scan':
+        github_info = github_full_scan(gh_username_repository[0], gh_username_repository[1])
+    elif scan_type == 'quick-scan':
+        github_info = github_quick_scan(gh_username_repository[0], gh_username_repository[1])
 
     return {
                "pypi": {
@@ -49,9 +53,10 @@ def pypi_details(package_name: str) -> dict:
            } | github_info
 
 
-def npm_details(package_name: str) -> dict:
+def npm_details(package_name: str, scan_type: str) -> dict:
     """
     :param package_name: The name of the NPM package that should be inspected
+    :param scan_type: Whether it should be a quick scan or full scan
     :return: The json report containing author and GitHub repository analytics along with their associates NPM registry scores
     """
 
@@ -91,7 +96,10 @@ def npm_details(package_name: str) -> dict:
 
     github_info = {}
     if gh_username_repository:
-        github_info = github_details(gh_username_repository[0], gh_username_repository[1])
+        if scan_type == 'full-scan':
+            github_info = github_full_scan(gh_username_repository[0], gh_username_repository[1])
+        elif scan_type == 'quick-scan':
+            github_info = github_quick_scan(gh_username_repository[0], gh_username_repository[1])
 
     return {
                "npm": {

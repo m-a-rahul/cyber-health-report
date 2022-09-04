@@ -7,7 +7,6 @@ from datetime import datetime
 
 import numpy as np
 import requests
-from sklearn.preprocessing import MinMaxScaler
 
 from components import github_api_call, NormalizeData
 
