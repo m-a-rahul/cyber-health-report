@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from github import github_quick_scan, github_full_scan
+from github import github_scan
 from components import email_validator
 from utils import lcs_of_array, calculate_average
 
@@ -41,10 +41,7 @@ def pypi_details(package_name: str, scan_type: str) -> dict:
         [urlparse(url).path for url in package_details["info"]["project_urls"].values() if
          urlparse(url).netloc.lstrip('www.') == 'github.com']).lstrip('/').rstrip('/').split('/')
 
-    if scan_type == 'full-scan':
-        github_info = github_full_scan(gh_username_repository[0], gh_username_repository[1])
-    elif scan_type == 'quick-scan':
-        github_info = github_quick_scan(gh_username_repository[0], gh_username_repository[1])
+    github_info = github_scan(gh_username_repository[0], gh_username_repository[1], scan_type)
 
     return {
                "pypi": {
@@ -96,10 +93,7 @@ def npm_details(package_name: str, scan_type: str) -> dict:
 
     github_info = {}
     if gh_username_repository:
-        if scan_type == 'full-scan':
-            github_info = github_full_scan(gh_username_repository[0], gh_username_repository[1])
-        elif scan_type == 'quick-scan':
-            github_info = github_quick_scan(gh_username_repository[0], gh_username_repository[1])
+        github_info = github_scan(gh_username_repository[0], gh_username_repository[1], scan_type)
 
     return {
                "npm": {

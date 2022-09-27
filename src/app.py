@@ -5,7 +5,7 @@ from flask import Flask, request
 from dotenv import load_dotenv
 from flask_cors import CORS
 
-from github import github_quick_scan, github_full_scan
+from github import github_scan
 from registries import npm_details, pypi_details
 
 load_dotenv()
@@ -22,10 +22,7 @@ def root():
     elif payload['platform'] == 'pypi':
         result = pypi_details(payload['package'], payload['flag'])
     elif payload['platform'] == 'github':
-        if payload['flag'] == 'full-scan':
-            result = github_full_scan(payload['username'], payload['repository'])
-        elif payload['flag'] == 'quick-scan':
-            result = github_quick_scan(payload['username'], payload['repository'])
+        result = github_scan(payload['username'], payload['repository'], payload['flag'])
     if result:
         return json.dumps({"status": "success",
                            "data": result})

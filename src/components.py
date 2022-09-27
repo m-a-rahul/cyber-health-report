@@ -1,9 +1,7 @@
 import json
 import os
-from ipaddress import IPv4Address, IPv6Address
 
 import requests
-from validate_email import validate_email
 
 
 def email_validator(email_id: str) -> bool:
@@ -11,28 +9,11 @@ def email_validator(email_id: str) -> bool:
     :param email_id: The email id of the author to be validated
     :return: The state of the email (active or inactive)
     """
-    return validate_email(
-        email_address=email_id,
-        # Pattern matching
-        check_format=True,
-        # Checking against blacklisted domains
-        check_blacklist=True,
-        # Checking the MX records
-        check_dns=True,
-        # Seconds until DNS timeout
-        dns_timeout=10,
-        # Checking SMTP initialization
-        check_smtp=True,
-        # Seconds until SMTP timeout
-        smtp_timeout=10,
-        # Do not skip TLS negotiation
-        smtp_skip_tls=False,
-        # SLContext to use with the TLS negotiation with the server
-        smtp_tls_context=None,
-        # Deactivate smtplib's debug output
-        smtp_debug=False,
-        # Use IPv4 and IPv6 addresses
-        address_types=frozenset([IPv4Address, IPv6Address]))
+    response = requests.get(
+        "https://isitarealemail.com/api/email/validate",
+        params={'email': email_id},
+        headers={'Authorization': "Bearer " + os.getenv('REAL_EMAIL_API_TOKEN')}).json()
+    return response["status"] == "valid"
 
 
 def github_api_call(url: str) -> json:
