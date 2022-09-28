@@ -123,6 +123,7 @@ def twt_user_analysis(twt_username: str) -> dict:
         return {
             "user_status": "verified",
             "username": twt_username,
+            "genuineness_score": 100
         }
 
     # Call the XgBoost model with the required Twitter user parameters

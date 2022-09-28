@@ -118,6 +118,6 @@ def github_scan(gh_username: str, gh_repository_name: str, flag: str) -> dict:
             "forked": repository_details['fork'],
             "files_vulnerabilities": files_vulnerabilities.get(),
             "repository": repository_score.get(),
-            "twitter": twitter_user_details.get()
+            "twitter": twitter_user_details.get() if twitter_user_details else None
         }
     }
