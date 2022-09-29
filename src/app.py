@@ -2,7 +2,6 @@ import json
 import os
 import warnings
 
-import psutil
 from flask import Flask, request
 
 from dotenv import load_dotenv
@@ -22,9 +21,6 @@ app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
 
 CORS(app)
 limiter = Limiter(app, key_func=get_remote_address)
-
-print('CPU USAGE: ', psutil.cpu_percent(4))
-print('MEMORY USAGE: ', psutil.virtual_memory()[2])
 
 
 @app.route('/analyze', methods=["POST"])
@@ -49,7 +45,3 @@ def analyze():
 def ratelimit_handler(e):
     return json.dumps({"status": "failure",
                        "message": "Rate-limit exceeded try again after 1min"})
-
-
-if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
