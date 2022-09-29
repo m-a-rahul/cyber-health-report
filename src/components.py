@@ -53,7 +53,11 @@ def NormalizeData(value, old_minimum, old_maximum, new_minimum, new_maximum):
     return ((value - old_minimum) / (old_maximum - old_minimum)) * (new_maximum - new_minimum) + new_minimum
 
 
-def formatResults(data):
+def formatResults(data: dict) -> dict:
+    """
+    :param data: Results obtained from performing analytics
+    :return: Formatted results
+    """
     author_final_score = 0
     author_metrics = 0
     project_final_score = 0

@@ -262,7 +262,7 @@ const submitPackage = (flag) => {
                     renderResults(parsedResponse.data);
                 }
                 else {
-                    alert("Kindly check your input and try again", "danger");
+                    alert(parsedResponse.message, "danger");
                     $('#payloadForm').trigger("reset");
                     inputDisabler(false);
                     hide('#loadingScreen');
