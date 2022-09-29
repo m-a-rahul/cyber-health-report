@@ -1,6 +1,8 @@
 import json
 import os
+import warnings
 
+import psutil
 from flask import Flask, request
 
 from dotenv import load_dotenv
@@ -13,14 +15,20 @@ from github import github_scan
 from registries import npm_details, pypi_details
 
 load_dotenv()
+warnings.filterwarnings('ignore')
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
+
 CORS(app)
 limiter = Limiter(app, key_func=get_remote_address)
 
+print('CPU USAGE: ', psutil.cpu_percent(4))
+print('MEMORY USAGE: ', psutil.virtual_memory()[2])
+
 
 @app.route('/analyze', methods=["POST"])
-@limiter.limit("45/minute")
+@limiter.limit("60/minute")
 def analyze():
     payload = json.loads(request.data)
     result = {}
