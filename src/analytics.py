@@ -22,7 +22,7 @@ def repository_data_collection(owner_details: dict, repository_details: dict) ->
     watchers = repository_details["watchers_count"] if "watchers_count" in repository_details else 0
     issues_open = repository_details["open_issues_count"] if "open_issues_count" in repository_details else 0
     topics = len(repository_details["topics"]) if "topics" in repository_details else 0
-    description_char_count = len(repository_details["description"]) if "description" in repository_details else 0
+    description_char_count = len(repository_details["description"]) if "description" in repository_details and repository_details["description"] else 0
 
     # Traversing through the list to find the required information
     commits_count = len(

@@ -264,6 +264,8 @@ const submitPackage = (flag) => {
                 else {
                     alert(parsedResponse.message, "danger");
                     $('#payloadForm').trigger("reset");
+                    show('#registry-input');
+                    hide('#vcs-input');
                     inputDisabler(false);
                     hide('#loadingScreen');
                     show('#searchScreen');
@@ -272,6 +274,8 @@ const submitPackage = (flag) => {
             error: function () {
                 alert("Encountered some unhandled exception", "danger");
                 $('#payloadForm').trigger("reset");
+                show('#registry-input');
+                hide('#vcs-input');
                 inputDisabler(false);
                 hide('#loadingScreen');
                 show('#searchScreen');
