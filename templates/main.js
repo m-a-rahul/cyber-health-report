@@ -1,3 +1,5 @@
+const server_address = "ec2-52-0-114-4.compute-1.amazonaws.com";
+
 const hide = (id) => {
     $(id).addClass('d-none');
 }
@@ -36,6 +38,37 @@ const inputDisabler = (flag) => {
     numbers.forEach((ele) => {
         $(ele).prop('disabled', flag);
     });
+}
+
+const ping = (ip, callback) => {
+
+    if (!this.inUse) {
+        this.inUse = true;
+        this.callback = callback;
+        this.ip = ip;
+        var _that = this;
+        this.img = new Image();
+        this.img.onload = function () {
+            _that.inUse = false;
+            _that.callback('responded');
+
+        };
+        this.img.onerror = function (e) {
+            if (_that.inUse) {
+                _that.inUse = false;
+                _that.callback(true, e);
+            }
+
+        };
+        this.start = new Date().getTime();
+        this.img.src = "http://" + ip;
+        this.timer = setTimeout(function () {
+            if (_that.inUse) {
+                _that.inUse = false;
+                _that.callback(false);
+            }
+        }, 1500);
+    }
 }
 
 $('#platform').on('change', function () {
@@ -246,7 +279,7 @@ const submitPackage = (flag) => {
         inputDisabler(true);
         $.ajax({
             type: 'POST',
-            url: "http://127.0.0.1:5000/analyze",
+            url: `http://${server_address}/analyze`,
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             success: function (response) {
@@ -286,4 +319,9 @@ const submitPackage = (flag) => {
 
 $(function () {
     inputDisabler(false);
+    ping(server_address, function (status, e) {
+        if(!status) {
+            alert("Server turned off. Contact the owner!", "danger");
+        }
+    });
 });
