@@ -1,4 +1,4 @@
-const server_address = "api.code-brigade.com";
+const server_address = "localhost";
 
 const hide = (id) => {
     $(id).addClass('d-none');
