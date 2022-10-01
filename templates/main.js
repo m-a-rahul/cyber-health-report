@@ -1,4 +1,4 @@
-const server_address = "ec2-52-0-114-4.compute-1.amazonaws.com";
+const server_address = "api.code-brigade.com";
 
 const hide = (id) => {
     $(id).addClass('d-none');
@@ -322,6 +322,7 @@ $(function () {
     ping(server_address, function (status, e) {
         if(!status) {
             alert("Server turned off. Contact the owner!", "danger");
+            inputDisabler(true);
         }
     });
 });
