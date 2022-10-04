@@ -223,18 +223,22 @@ def formatResults(data: dict) -> dict:
                 authors_email_details.append(
                     {
                         "email": data["pypi"]["author"]["author"]["email"],
-                        "status": data["pypi"]["author"]["author"]["email_verified"]
+                        "status": data["pypi"]["author"]["author"]["email_verified"],
+                        "tag": "Author"
                     }
                 )
-        if "publisher" in data["pypi"]["author"]:
-            if "email" in data["pypi"]["author"]["publisher"] and data["pypi"]["author"]["publisher"]["email"]:
+                authors_email_score += 100 if data["pypi"]["author"]["author"]["email_verified"] else 0
+        if "maintainer" in data["pypi"]["author"]:
+            if "email" in data["pypi"]["author"]["maintainer"] and data["pypi"]["author"]["maintainer"]["email"]:
                 authors_email_count += 1
                 authors_email_details.append(
                     {
-                        "email": data["pypi"]["author"]["publisher"]["email"],
-                        "status": data["pypi"]["author"]["publisher"]["email_verified"]
+                        "email": data["pypi"]["author"]["maintainer"]["email"],
+                        "status": data["pypi"]["author"]["maintainer"]["email_verified"],
+                        "tag": "Maintainer"
                     }
                 )
+                authors_email_score += 100 if data["pypi"]["author"]["maintainer"]["email_verified"] else 0
 
     if authors_email_count > 0:
         author_info["email"] = {

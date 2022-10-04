@@ -108,7 +108,7 @@ const renderResults = (results) => {
                 badge = '<span class="badge text-bg-info">Active</span>';
                 mail_score = 100;
             }
-            renderEmailResults = `<li>
+            renderEmailResults += `<li>
                 <span class="text-muted">${author.tag} email:</span> ${author.email}
                 ${badge}
             </li>`
