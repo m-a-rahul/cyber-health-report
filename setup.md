@@ -25,7 +25,7 @@ wget https://publicly-downloadable-files.s3.amazonaws.com/twitter_user_confidenc
 cd ..
 
 ```
-For security reasons the .env file is not available publically. I am sharing with you steps to create a .env file [here](https://bit.ly/3fA2XrF). After creating the file paste it in ```cyber-health-report/src``` directory.
+For security reasons the .env file is not available publically. I am sharing with you steps to create a .env file [here](https://bit.ly/3FcxfKf). After creating the file paste it in ```cyber-health-report/src``` directory.
 
 Build and run the docker image
 
